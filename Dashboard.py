@@ -1,6 +1,6 @@
 # import the necessary packages
 from __future__ import print_function
-import RPi.GPIO as GPIO  
+#import RPi.GPIO as GPIO
 from PIL import Image
 from PIL import ImageTk
 from PIL import ImageEnhance
@@ -10,7 +10,7 @@ import logging
 import datetime
 import time
 import imutils
-import cv2
+#import cv2
 import numpy as np
 import os
 import socket
@@ -54,16 +54,16 @@ class Dashboard:
         self.LedLeak = 6
         self.LedBattery = 13
         self.LedSpace = 19
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM)      # Configure pin layout to board's physical layout
-        
-        GPIO.setup(self.LedUV,GPIO.OUT)      # Set LED pin to output
-        GPIO.setup(self.LedNIR ,GPIO.OUT)
-        GPIO.setup(self.LedWhite,GPIO.OUT)
-        GPIO.setup(self.LedConnect,GPIO.OUT)
-        GPIO.setup(self.LedLeak,GPIO.OUT)
-        GPIO.setup(self.LedBattery,GPIO.OUT)
-        GPIO.setup(self.LedSpace,GPIO.OUT)
+        # GPIO.setwarnings(False)
+        # GPIO.setmode(GPIO.BCM)      # Configure pin layout to board's physical layout
+        #
+        # GPIO.setup(self.LedUV,GPIO.OUT)      # Set LED pin to output
+        # GPIO.setup(self.LedNIR ,GPIO.OUT)
+        # GPIO.setup(self.LedWhite,GPIO.OUT)
+        # GPIO.setup(self.LedConnect,GPIO.OUT)
+        # GPIO.setup(self.LedLeak,GPIO.OUT)
+        # GPIO.setup(self.LedBattery,GPIO.OUT)
+        # GPIO.setup(self.LedSpace,GPIO.OUT)
         
         self.activeLED = self.LedWhite
 
@@ -175,15 +175,15 @@ class Dashboard:
                              fg='white', font=("Courier", 8), command=self.changeLED)
         R3.pack(side="left",fill="both", padx=5, pady=10)
         
-        GPIO.output(self.LedWhite, GPIO.LOW)
-        GPIO.output(self.LedUV, GPIO.LOW)
-        GPIO.output(self.LedNIR, GPIO.LOW)
-        R3.invoke()
-        
-        GPIO.output(self.LedConnect, GPIO.LOW)
-        GPIO.output(self.LedLeak, GPIO.HIGH)
-        GPIO.output(self.LedBattery, GPIO.HIGH)
-        GPIO.output(self.LedSpace, GPIO.HIGH)
+        # GPIO.output(self.LedWhite, GPIO.LOW)
+        # GPIO.output(self.LedUV, GPIO.LOW)
+        # GPIO.output(self.LedNIR, GPIO.LOW)
+        # R3.invoke()
+        #
+        # GPIO.output(self.LedConnect, GPIO.LOW)
+        # GPIO.output(self.LedLeak, GPIO.HIGH)
+        # GPIO.output(self.LedBattery, GPIO.HIGH)
+        # GPIO.output(self.LedSpace, GPIO.HIGH)
         
         
 #         LED_mode_label = tki.Label(modeConfig_panelU, text= "LED mode: ")
@@ -274,7 +274,7 @@ class Dashboard:
                 # OpenCV represents images in BGR order; however PIL
                 # represents images in RGB order, so we need to swap
                 # the channels, then convert to PIL and ImageTk format
-                self.image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+              #  self.image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
               
                 #set saturation and exposure values
                # self.image = self.setSaturationAndExposure(self.image)
@@ -351,10 +351,10 @@ class Dashboard:
         image = converter.enhance(self.saturationValue)
         return image
         
-    def ImageExposureandBrightness(self,frame):
-        image = cv2.addWeighted(frame, self.exposureValue, np.zeros(self.frame.shape, self.frame.dtype), 0, self.brightValue)
-        
-        return image
+    # def ImageExposureandBrightness(self,frame):
+    #   #  image = cv2.addWeighted(frame, self.exposureValue, np.zeros(self.frame.shape, self.frame.dtype), 0, self.brightValue)
+    #
+    #   #  return image
     
     def checkMode(self):
         pics = None
@@ -472,8 +472,8 @@ class Dashboard:
         elif(self.setLed.get() == 3):
             self.activeLED = self.LedNIR
         
-        GPIO.output(previousLed, GPIO.LOW)
-        GPIO.output(self.activeLED, GPIO.HIGH)
+        # GPIO.output(previousLed, GPIO.LOW)
+        # GPIO.output(self.activeLED, GPIO.HIGH)
             
     
     def getsystemMode(self):

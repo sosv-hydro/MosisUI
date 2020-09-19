@@ -3,7 +3,7 @@ from CaptureModeUI import CaptureModeUI
 from MainMenuUI import MainMenuUI
 from SensorModeUI import SensorModeUI
 from Gallery import Gallery
-from Dashboard import Dashboard
+#from Dashboard import Dashboard
 from DiagnosticsUI import DiagnosticsUI
 from Buttons import Col1Buttons, Col2Buttons
 from imutils.video import VideoStream
@@ -147,19 +147,19 @@ class MainView(tk.Frame):
         
         conn = self.establishCommunication()
         
-        d = dashboard(root, conn, c.getInstance(), s.getInstance(), g.getInstance())
-        dashboard_panel = d.returnPage()
+       # d = dashboard(root, conn, c.getInstance(), s.getInstance(), g.getInstance())
+       # dashboard_panel = d.returnPage()
         
         diag = diagnosticMode(root, conn)
         diagnostics_panel = diag.returnDiagnosicsUI()
         
-        panelList = [ master_panel, captureMode_panel, sensorMode_panel, gallery_panel, dashboard_panel, diagnostics_panel]    
+        panelList = [ master_panel, captureMode_panel, sensorMode_panel, gallery_panel, diagnostics_panel]
             
         #Control button set up  
         buttons_1 = Col1Buttons(root, panelList)    
         buttons_1.initializeButtonColumn1() 
-        buttons_2 = Col2Buttons(root, master_panel, d.getInstance())    
-        buttons_2.initializeButtonColumn2()
+       # buttons_2 = Col2Buttons(root, master_panel, d.getInstance())
+      #  buttons_2.initializeButtonColumn2()
         
         buttonframe = tk.Frame(root)
         container = tk.Frame(root)
@@ -170,21 +170,21 @@ class MainView(tk.Frame):
         captureMode_panel.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
         sensorMode_panel.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
         gallery_panel.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
-        dashboard_panel.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
+    #    dashboard_panel.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
         diagnostics_panel.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
 
         b1 = tk.Button(buttonframe, text="Main Menu", command=master_panel.lift, font=("Courier", 9))
         b2 = tk.Button(buttonframe, text="Capture Mode", command=captureMode_panel.lift, font=("Courier", 9))
         b3 = tk.Button(buttonframe, text="Sensor Mode", command=sensorMode_panel.lift, font=("Courier", 9))
         b4 = tk.Button(buttonframe, text="Gallery", command=gallery_panel.lift, font=("Courier", 9))
-        b5 = tk.Button(buttonframe, text="Dashboard", command=dashboard_panel.lift, font=("Courier", 9))
+     #   b5 = tk.Button(buttonframe, text="Dashboard", command=dashboard_panel.lift, font=("Courier", 9))
         b6 = tk.Button(buttonframe, text="Diagnostics", command=diagnostics_panel.lift, font=("Courier", 9))
 
         b1.pack(side="left")
         b2.pack(side="left")
         b3.pack(side="left")
         b4.pack(side="left")
-        b5.pack(side="left")
+     #   b5.pack(side="left")
         b6.pack(side="left")
 
         master_panel.lift()

@@ -1,5 +1,5 @@
 import tkinter as tk
-import RPi.GPIO as GPIO  
+#import RPi.GPIO as GPIO
 
 class DiagnosticsUI:
 

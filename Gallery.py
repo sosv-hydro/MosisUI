@@ -3,7 +3,7 @@ from tkinter.filedialog import asksaveasfile, askdirectory
 import os
 from PIL import ImageTk
 from PIL import Image
-import cv2
+#import cv2
 
 class Gallery:
     def __init__(self, root):
@@ -117,9 +117,9 @@ class Gallery:
         for entry in self.listOfFile:
             fullPath = os.path.join(self.dirName, entry)
             print(fullPath)
-            img = cv2.imread(fullPath)
-            edge = Image.fromarray(img)
-            edge.save(filename)
+           # img = cv2.imread(fullPath)
+         #   edge = Image.fromarray(img)
+         #   edge.save(filename)
         
         
         
