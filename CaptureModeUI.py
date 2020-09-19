@@ -1,24 +1,34 @@
 import tkinter as tki
 
+SINGLE = 1
+BURST = 2
+INTERVAL = 3
+IMAGESTACK = 4
+
 class CaptureModeUI:
-    def __init__(self, root):
-        
-         # initialize the root window and image panel
-        self.root = root
-      #  self.root.geometry("%dx%d+0+0" % (680, 600))
-        
-       # self.root = root
+    def __init__(self):
+
         self.modeRBVar = tki.IntVar()
         self.camRBVar = tki.IntVar()
-        
+
+        self.captureModeText = tki.StringVar()
+        self.captureModeDict = {1: "Single", 2: "Burst", 3: "Interval", 4: "ImageStack"}
+
         self.stepSB = None
         self.intervalSB = None
         self.burstSB = None
         
         self.master_panel = None
+
+        self.modeRBVar.set(1)
+        self.changeCaptureModeText()
         
-    def initializeCaptureMode(self):    
-        self.master_panel = tki.Frame(self.root, bg='#46637B',height=600, width=800)
+    def initializeCaptureMode(self):
+        root = tki.Toplevel()
+        root.geometry("%dx%d+%d+%d" % (600, 600, 0, 0))
+        root.overrideredirect(True)
+
+        self.master_panel = tki.Frame(root, bg='#46637B',height=600, width=600)
         self.master_panel.pack(fill="both")
         
         ocusis_label = tki.Label(self.master_panel, text= "OCUSIS", bg='#46637B', fg='white', font=("Courier", 24))
@@ -31,7 +41,7 @@ class CaptureModeUI:
         capMode_label = tki.Label(panel1, text= "Capture Mode ", bg='#46637B', fg='black', font=("Courier", 24))
         capMode_label.pack(side="left",fill="both", padx=20, pady=20)
         
-        back_button = tki.Button(panel1, text= "Back")
+        back_button = tki.Button(panel1, text= "Back", command=lambda : self.closeWindow(root))
         back_button.pack(side = "right", fill="both", padx=5, pady=5)
         
         fill_label = tki.Label(self.master_panel, text= "", height=1, bg="grey")
@@ -63,8 +73,8 @@ class CaptureModeUI:
         panel3 = tki.Frame(self.master_panel, bg='#84A1B9')
         panel3.pack(side="top",fill="both", padx=20, pady=5)
         
-        singleModeRB = tki.Radiobutton(panel3, text="Single Mode", variable=self.modeRBVar, value=int(1),selectcolor='red', bg='#46637B',
-                                       fg='white', font=("Courier", 12))
+        singleModeRB = tki.Radiobutton(panel3, text="Single Mode", variable=self.modeRBVar, value=int(1), selectcolor='red', bg='#46637B',
+                                       command=self.changeCaptureModeText ,fg='white', font=("Courier", 12))
         singleModeRB.pack(side="left", fill="both", padx=5, pady=10)
         
         # ---------------- Fourth Panel ----------------------------------
@@ -73,7 +83,7 @@ class CaptureModeUI:
         panel4.pack(side="top",fill="both", padx=20, pady=5)
         
         burstModeRB = tki.Radiobutton(panel4, text="Burst Mode", variable=self.modeRBVar,value=int(2), selectcolor='red',bg='#46637B',
-                                      fg='white', font=("Courier", 12) )
+                                      command=self.changeCaptureModeText, fg='white', font=("Courier", 12) )
         burstModeRB.pack(side="left", fill="both", padx=5, pady=10)
         
         burstNumSB = tki.Spinbox(panel4, from_=2, to=5,width= 2, bg='#46637B', fg='white', font=("Courier", 12) )
@@ -89,7 +99,7 @@ class CaptureModeUI:
         panel5.pack(side="top",fill="both", padx=20, pady=5)
         
         timeLapseRB = tki.Radiobutton(panel5, text="Time Lapse", variable=self.modeRBVar, value=int(3), selectcolor='red',bg='#46637B',
-                                      fg='white', font=("Courier", 12))
+                                      command=self.changeCaptureModeText, fg='white', font=("Courier", 12))
         timeLapseRB.pack(side="left", fill="both", padx=5, pady=10)
         
         intervalSB = tki.Spinbox(panel5, from_=1, to=5, bg='#46637B', width= 2, fg='white', font=("Courier", 12) )
@@ -111,8 +121,8 @@ class CaptureModeUI:
         panel6 = tki.Frame(self.master_panel, bg='#84A1B9')
         panel6.pack(side="top",fill="both", padx=20, pady=5)
         
-        imageStackingRB = tki.Radiobutton(panel6, text="Image Stacking", variable=self.modeRBVar, value=int(4),selectcolor='red', bg='#46637B',
-                                          fg='white', font=("Courier", 12) )
+        imageStackingRB = tki.Radiobutton(panel6, text="Image Stacking", variable=self.modeRBVar, value=int(4),
+                                          command=self.changeCaptureModeText, selectcolor='red', bg='#46637B', fg='white', font=("Courier", 12) )
         imageStackingRB.pack(side="left", fill="both", padx=2, pady=10)
         
         op3RB = tki.Radiobutton(panel6, text="Option 3", value=1, bg='#46637B', fg='white', font=("Courier", 12) )
@@ -131,9 +141,18 @@ class CaptureModeUI:
         timeLapseRB.deselect()
         burstModeRB.deselect()
         singleModeRB.select()
-        
-       # self.root.mainloop()
-        return self.master_panel
+
+    def closeWindow(self, root):
+        self.burstSB = self.burstSB.get()
+        self.intervalSB = self.intervalSB.get()
+        self.stepSB = self.stepSB.get()
+        print("values for burst="+str(self.burstSB)+", interval="+str(self.intervalSB) + ", step="+str(self.stepSB))
+        root.destroy()
+
+
+    def changeCaptureModeText(self):
+        self.captureModeText.set(self.captureModeDict[self.modeRBVar.get()])
+
        
     def getCaptureModeValues(self):
         return self.modeRBVar.get()
@@ -147,6 +166,3 @@ class CaptureModeUI:
     def getIntervalValues(self):
         return self.intervalSB.get()
 
-#CaptureModeUI()
-
-        
