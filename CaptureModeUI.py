@@ -31,7 +31,7 @@ class CaptureModeUI:
         self.master_panel = tki.Frame(root, bg='#46637B',height=600, width=600)
         self.master_panel.pack(fill="both")
         
-        ocusis_label = tki.Label(self.master_panel, text= "OCUSIS", bg='#46637B', fg='white', font=("Courier", 24))
+        ocusis_label = tki.Label(self.master_panel, text= "MOSIS", bg='#46637B', fg='white', font=("Courier", 24))
         ocusis_label.pack(fill="both", padx=20, pady=20)
         
         #----------------- Firstmost panel -------------------------------
@@ -41,7 +41,8 @@ class CaptureModeUI:
         capMode_label = tki.Label(panel1, text= "Capture Mode ", bg='#46637B', fg='black', font=("Courier", 24))
         capMode_label.pack(side="left",fill="both", padx=20, pady=20)
         
-        back_button = tki.Button(panel1, text= "Back", command=lambda : self.closeWindow(root))
+        back_button = tki.Button(panel1, text= "Back",
+                                 command=lambda : self.closeWindow(root))
         back_button.pack(side = "right", fill="both", padx=5, pady=5)
         
         fill_label = tki.Label(self.master_panel, text= "", height=1, bg="grey")

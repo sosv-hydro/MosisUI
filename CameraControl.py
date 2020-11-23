@@ -5,9 +5,9 @@ embedded within a Tknter window
 """
 from pixelinkWrapper import *
 from ctypes import *
-import ctypes.wintypes
+#import ctypes.wintypes
 import threading
-import win32api, win32con
+#import win32api, win32con
 
 """
 Preview control thread -- starts and stops the preview, as well as handles the Windows Dispatch
