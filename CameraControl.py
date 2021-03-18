@@ -25,6 +25,8 @@ class CameraControl():
 
         self.minFocusValue = None
         self.maxFocusValue = None
+        self.minMaxParams = []
+        self.customFocus = [1]
 
         self.minExposureValue = None
         self.maxExposureValue = None
@@ -66,7 +68,9 @@ class CameraControl():
                 # Sets max and min focus value of camera
                 self.minFocusValue = cameraFeatures.Features[0].Params[0].fMinValue  # Min focus value
                 self.maxFocusValue = cameraFeatures.Features[0].Params[1].fMaxValue  # Max focus value
-
+                self.minMaxParams.insert(0, self.minFocusValue)
+                self.minMaxParams.insert(1, self.maxFocusValue)
+                
                 print("min focus value: ", self.minFocusValue)
                 print("max focus value: ", self.maxFocusValue)
 
@@ -115,53 +119,77 @@ class CameraControl():
                 print("min Gain value: ", self.minGainValue)
                 print("max Gain value: ", self.maxGainValue)
 
+#     def setUpCamera(self, num_cameras=1):
+#         """
+#         Looks for the camera among the devices connected to the system, returns the first intance of the camera found.
+#         (i.e. if more than one camera, will return the first one found)
+#         :return: camera handle or pointer
+#         """
+#         main_hCameras = []
+#         ret = PxLApi.getNumberCameras()
+#         cameras_det = ret[1]
+#         print("number of cameras "+str(num_cameras))
+#         if len(cameras_det) > 0 :
+#             for i in range(num_cameras):
+#                 print(i)
+#                 serialNumber = cameras_det[i].CameraSerialNum
+#                 ret2 = PxLApi.initialize(serialNumber)
+#                 #ret2 = PxLApi.initialize(i)
+#                 if PxLApi.apiSuccess(ret2[0]):
+#                     main_hCameras.append(ret2[1])
+#                    # self.setUpMaxMinFeatureValues(main_hCameras[i])
+#         self.setUpMaxMinFeatureValues(main_hCameras[0])
+
+
+     #   return main_hCameras
+    
     def setUpCamera(self, num_cameras=1):
-        """
-        Looks for the camera among the devices connected to the system, returns the first intance of the camera found.
-        (i.e. if more than one camera, will return the first one found)
-        :return: camera handle or pointer
-        """
-        main_hCamera = None
-        cameras_det = len(PxLApi.getNumberCameras()[1])
-        if cameras_det > 0 :
-            for i in range(num_cameras):
-                ret = PxLApi.initialize(i)
-                if PxLApi.apiSuccess(ret[0]):
-                    main_hCamera = ret[1]
-        self.setUpMaxMinFeatureValues(main_hCamera)
+        main_hCameras = []
+        # First: Determine how many cameras are connected and available for connecting
+        ret = PxLApi.getNumberCameras()
+        #print(ret)
+        if PxLApi.apiSuccess(ret[0]):
+            cameraIdInfo = ret[1]
+            numCameras = len(cameraIdInfo)
+            print(numCameras)
+            if 0 < numCameras:
+                # One-by-one, get the camera info for each camera
+                for i in range(numCameras):
+                    serialNumber = cameraIdInfo[i].CameraSerialNum
+                    print(serialNumber)
+                    # Connect to the camera
+                    ret = PxLApi.initialize(serialNumber)
+                    if PxLApi.apiSuccess(ret[0]):
+                        hCamera = ret[1]
+                        main_hCameras.append(hCamera)
+                        # And get the info
+                        ret = PxLApi.getCameraInfo(hCamera)
+                        print(ret)
+                        
+        self.setUpMaxMinFeatureValues(main_hCameras[0])
+        return main_hCameras
+                        
 
-
-        return main_hCamera
-
-    def control_preview_thread(self, hCamera, topHwnd):
+    def control_preview_thread(self, hCamera, topHwnd, title="", leftOffset=-10 ):
         """
         Function to be executed by a thread in charge of showing the camera preview
         :param topHwnd: integer number that corresponds to the parent window the stream will be showed in
         :return: an assertion that the stream was successfully stopped, once the user exits the preview
         """
-        user32 = windll.user32
-        msg = ctypes.wintypes.MSG()
-        pMsg = ctypes.byref(msg)
-
-        # Create an arror cursor (see below)
-        defaultCursor = win32api.LoadCursor(0, win32con.IDC_ARROW)
-
-        ret = PxLApi.setPreviewSettings(hCamera, "", PxLApi.WindowsPreview.WS_VISIBLE | PxLApi.WindowsPreview.WS_CHILD,
-                                        25, 25, self.stream_width, self.stream_height, topHwnd)
-
-        # Start the preview (NOTE: camera must be streaming).  Keep looping until the previewState is STOPed
+        width =400
+        height = 400
+        
+        ret = PxLApi.setPreviewSettings(hCamera, title, PxLApi.WindowsPreview.WS_VISIBLE | PxLApi.WindowsPreview.WS_CHILD, 
+                                leftOffset, -70, width, height,topHwnd)
+        
         ret = PxLApi.setPreviewState(hCamera, PxLApi.PreviewState.START)
-        while (PxLApi.PreviewState.START == self.previewState and PxLApi.apiSuccess(ret[0])):
-            if user32.PeekMessageW(pMsg, 0, 0, 0, 1) != 0:
-                # All messages are simpy forwarded onto to other Win32 event handlers.  However, we do
-                # set the cursor just to ensure that parent windows resize cursors do not persist within
-                # the preview window
-                win32api.SetCursor(defaultCursor)
-                user32.TranslateMessage(pMsg)
-                user32.DispatchMessageW(pMsg)
 
-        # User has exited -- Stop the preview
-        ret = PxLApi.setPreviewState(hCamera, PxLApi.PreviewState.STOP)
+#         while (PxLApi.PreviewState.START == self.previewState and PxLApi.apiSuccess(ret[0])):
+#             pass
+#             if(PxLApi.PreviewState.STOP == self.previewState):
+#                 print("stop")
+#                 # User has exited -- Stop the preview
+#                 ret = PxLApi.setPreviewState(hCamera, PxLApi.PreviewState.STOP)
         assert PxLApi.apiSuccess(ret[0]), "%i" % ret[0]
 
 
@@ -184,6 +212,12 @@ class CameraControl():
         self.previewState = PxLApi.PreviewState.START
         previewThread = self.create_new_preview_thread(hCamera, topHwnd)
         previewThread.start()
+    
+    def cleanUpCameras(self, hCamera):
+        for i in range(len(hCamera)):
+            PxLApi.setStreamState(hCamera[i], PxLApi.StreamState.STOP)
+            ret = PxLApi.setPreviewState(hCamera[i], PxLApi.PreviewState.STOP)
+            PxLApi.uninitialize(hCamera[i])
 
     def setFocus(self, hCamera, newfocusValue=2, mode="auto"):
         """
@@ -191,29 +225,33 @@ class CameraControl():
         :param hCamera: the camera to perform autofocus
         :return:
         """
-        params = []
+        
+        #params = []
         if mode is "auto":
-            params.insert(0, self.minFocusValue)
-            params.insert(1, self.maxFocusValue)
-
-            ret = PxLApi.setFeature(hCamera, PxLApi.FeatureId.FOCUS, PxLApi.FeatureFlags.ONEPUSH, params)
-            if not PxLApi.apiSuccess(ret[0]):
-                print("  Could not set Focus Feature, ret: %d!" % ret[0])
-                PxLApi.uninitialize(hCamera)
-                return
+             #params.insert(0, self.minFocusValue)
+#             params.insert(1, self.maxFocusValue)
+            
+            for i in range(len(hCamera)):
+                ret = PxLApi.setFeature(hCamera[i], PxLApi.FeatureId.FOCUS, PxLApi.FeatureFlags.ONEPUSH, self.minMaxParams)
+                if not PxLApi.apiSuccess(ret[0]):
+                    print("  Could not set Focus Feature, ret: %d!" % ret[0])
+                    PxLApi.uninitialize(hCamera[i])
+                    return
 
         else:
             if not self.minFocusValue < newfocusValue < self.maxFocusValue:
                 print("focus value not in acceptable range")
                 return
 
-            params.insert(0, newfocusValue)
-
-            ret = PxLApi.setFeature(hCamera, PxLApi.FeatureId.FOCUS, PxLApi.FeatureFlags.MANUAL, params)
-            if not PxLApi.apiSuccess(ret[0]):
-                print("  Could not set Focus Feature, ret: %d!" % ret[0])
-                PxLApi.uninitialize(hCamera)
-                return
+            #self.params.insert(0, newfocusValue)
+            self.customFocus[0] = newfocusValue
+            
+            for i in range(len(hCamera)):
+                ret = PxLApi.setFeature(hCamera[i], PxLApi.FeatureId.FOCUS, PxLApi.FeatureFlags.MANUAL, self.customFocus)
+                if not PxLApi.apiSuccess(ret[0]):
+                    print("  Could not set Focus Feature, ret: %d!" % ret[0])
+                    PxLApi.uninitialize(hCamera[i])
+                    return
             self.focusValue = newfocusValue
 
     def setExposure(self, hCamera, newExposureValue, mode="auto"):
@@ -234,20 +272,22 @@ class CameraControl():
             params.insert(0, self.minExposureValue)
             params.insert(1, self.minExposureValue)
             params.insert(2, self.maxExposureValue)
-
-            ret = PxLApi.setFeature(hCamera, PxLApi.FeatureId.EXPOSURE, PxLApi.FeatureFlags.AUTO, params)
-            if not PxLApi.apiSuccess(ret[0]):
-                print("  Could not set Focus Feature, ret: %d!" % ret[0])
-                PxLApi.uninitialize(hCamera)
-                return
+            
+            for i in range(len(hCamera)):
+                ret = PxLApi.setFeature(hCamera[i], PxLApi.FeatureId.EXPOSURE, PxLApi.FeatureFlags.AUTO, params)
+                if not PxLApi.apiSuccess(ret[0]):
+                    print("  Could not set Focus Feature, ret: %d!" % ret[0])
+                    PxLApi.uninitialize(hCamera[i])
+                    return
         else:
             params.insert(0, newExposureValue)
-
-            ret = PxLApi.setFeature(hCamera, PxLApi.FeatureId.EXPOSURE, PxLApi.FeatureFlags.MANUAL, params)
-            if not PxLApi.apiSuccess(ret[0]):
-                print("  Could not set Focus Feature, ret: %d!" % ret[0])
-                PxLApi.uninitialize(hCamera)
-                return
+            
+            for i in range(len(hCamera)):
+                ret = PxLApi.setFeature(hCamera[i], PxLApi.FeatureId.EXPOSURE, PxLApi.FeatureFlags.MANUAL, params)
+                if not PxLApi.apiSuccess(ret[0]):
+                    print("  Could not set Focus Feature, ret: %d!" % ret[0])
+                    PxLApi.uninitialize(hCamera[i])
+                    return
             self.exposureValue = newExposureValue
 
     def setSaturation(self, hCamera, newSaturationValue, mode="auto"):
@@ -267,20 +307,22 @@ class CameraControl():
             params = []
             params.insert(0, self.minSaturationValue)
             params.insert(1, self.maxSaturationValue)
-
-            ret = PxLApi.setFeature(hCamera, PxLApi.FeatureId.SATURATION, PxLApi.FeatureFlags.AUTO, params)
-            if not PxLApi.apiSuccess(ret[0]):
-                print("  Could not set Saturation Feature, ret: %d!" % ret[0])
-                PxLApi.uninitialize(hCamera)
-                return
+            
+            for i in range(len(hCamera)):
+                ret = PxLApi.setFeature(hCamera[i], PxLApi.FeatureId.SATURATION, PxLApi.FeatureFlags.AUTO, params)
+                if not PxLApi.apiSuccess(ret[0]):
+                    print("  Could not set Saturation Feature, ret: %d!" % ret[0])
+                    PxLApi.uninitialize(hCamera[i])
+                    return
         else:
             params.insert(0, newSaturationValue)
-
-            ret = PxLApi.setFeature(hCamera, PxLApi.FeatureId.SATURATION, PxLApi.FeatureFlags.MANUAL, params)
-            if not PxLApi.apiSuccess(ret[0]):
-                print("  Could not set Saturation Feature, ret: %d!" % ret[0])
-                PxLApi.uninitialize(hCamera)
-                return
+            
+            for i in range(len(hCamera)):
+                ret = PxLApi.setFeature(hCamera[i], PxLApi.FeatureId.SATURATION, PxLApi.FeatureFlags.MANUAL, params)
+                if not PxLApi.apiSuccess(ret[0]):
+                    print("  Could not set Saturation Feature, ret: %d!" % ret[0])
+                    PxLApi.uninitialize(hCamera[i])
+                    return
             self.saturationValue = newSaturationValue
 
     def setGain(self, hCamera, newGainValue, mode="auto"):
@@ -300,20 +342,22 @@ class CameraControl():
             params = []
             params.insert(0, self.minGainValue)
             params.insert(1, self.maxGainValue)
-
-            ret = PxLApi.setFeature(hCamera, PxLApi.FeatureId.GAIN, PxLApi.FeatureFlags.AUTO, params)
-            if not PxLApi.apiSuccess(ret[0]):
-                print("  Could not set Gain Feature, ret: %d!" % ret[0])
-                PxLApi.uninitialize(hCamera)
-                return
+            
+            for i in range(len(hCamera)):
+                ret = PxLApi.setFeature(hCamera[i], PxLApi.FeatureId.GAIN, PxLApi.FeatureFlags.AUTO, params)
+                if not PxLApi.apiSuccess(ret[0]):
+                    print("  Could not set Gain Feature, ret: %d!" % ret[0])
+                    PxLApi.uninitialize(hCamera[i])
+                    return
         else:
             params.insert(0, newGainValue)
-
-            ret = PxLApi.setFeature(hCamera, PxLApi.FeatureId.GAIN, PxLApi.FeatureFlags.MANUAL, params)
-            if not PxLApi.apiSuccess(ret[0]):
-                print("  Could not set Gain Feature, ret: %d!" % ret[0])
-                PxLApi.uninitialize(hCamera)
-                return
+            
+            for i in range(len(hCamera)):
+                ret = PxLApi.setFeature(hCamera[i], PxLApi.FeatureId.GAIN, PxLApi.FeatureFlags.MANUAL, params)
+                if not PxLApi.apiSuccess(ret[0]):
+                    print("  Could not set Gain Feature, ret: %d!" % ret[0])
+                    PxLApi.uninitialize(hCamera[i])
+                    return
             self.gainValue = newGainValue
 
 

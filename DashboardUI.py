@@ -11,6 +11,8 @@ import time
 import threading
 import logging
 import RPi.GPIO as GPIO
+from datetime import datetime
+import os
 #import win32api, win32con
 
 from CameraControl import CameraControl
@@ -39,11 +41,14 @@ class DashboardUI:
 
         self.captureModeDict = None
 
-        self.hCamera = None
+        #self.hCamera = None
+        self.hCamera = []
         self.cameraControl = None
         self.cameraPictureControl = CameraPictureControl()
 
         self.topHwnd = None
+        
+        #self.topHwnd = []
         self.root = root
         
          # ------------Defining LEDs-------------------------------
@@ -94,31 +99,31 @@ class DashboardUI:
         self.connState = Tk.StringVar()
        
 
-
     def winResizeHandler(self, event):
         # The user has resized the window.  Also resize the preview so that the preview will scale to the new window size
         PxLApi.setPreviewSettings(self.hCamera, "", PxLApi.WindowsPreview.WS_VISIBLE | PxLApi.WindowsPreview.WS_CHILD, 0, 0,
                                   event.width, event.height, self.topHwnd)
 
     def configureLowerDashboardPanel(self, master_panel):
+        print("configuring lower dashboard")
 
         lower_panel = Tk.Frame(master_panel, bg='#46637B')
         lower_panel.pack(side="bottom", padx=1, pady=1)
 
         # panel for the scales
         scale_panel = Tk.Frame(lower_panel, bg='#004000')
-        scale_panel.pack(side="left", fill="both", padx=2, pady=2)
+        scale_panel.pack(side="left", fill="both", padx=2, pady=1)
 
         params_label = Tk.Label(scale_panel, text="Camera Frame params: ")
-        params_label.pack(side="top", fill="x", padx=5, pady=5)
+        params_label.pack(side="top", fill="x", padx=5, pady=1)
 
         # panel for the scales
         sub_scale_panelL = Tk.Frame(scale_panel, bg='#004000')
-        sub_scale_panelL.pack(side="left", fill="both", padx=5, pady=5)
+        sub_scale_panelL.pack(side="left", fill="both", padx=5, pady=1)
 
         # panel for the scales
         sub_scale_panelR = Tk.Frame(scale_panel, bg='#004000')
-        sub_scale_panelR.pack(side="left", fill="both", padx=5, pady=5)
+        sub_scale_panelR.pack(side="left", fill="both", padx=5, pady=1)
 
         focusScale = Tk.Scale(sub_scale_panelL, from_=2, to=46000, resolution=5, orient=Tk.HORIZONTAL, width=5,
                               troughcolor="#004000", bg='#84A1B9', label="Focus", variable=self.focusSNum,
@@ -147,10 +152,10 @@ class DashboardUI:
         modeConfig_panel.pack(side="left", fill="both", padx=2, pady=2)
 
         modeConfig_panelU = Tk.Frame(modeConfig_panel, bg='#004000', width=25, height=50)
-        modeConfig_panelU.pack(side="top", fill="x", padx=5, pady=5)
+        modeConfig_panelU.pack(side="top", fill="x", padx=5, pady=2)
         
         modeConfig_panelU2 = Tk.Frame(modeConfig_panel, bg='#004000', width=25, height=50)
-        modeConfig_panelU2.pack(side="top", fill="x", padx=5, pady=5)
+        modeConfig_panelU2.pack(side="top", fill="x", padx=5, pady=2)
 
         modeConfig_panelL = Tk.Frame(modeConfig_panel, bg='#004000', width=25, height=50)
         modeConfig_panelL.pack(side="top", fill="x", padx=5, pady=5)
@@ -170,14 +175,14 @@ class DashboardUI:
 
         mode1_label = Tk.Label(modeConfig_panel, text="", bg='#46637B', fg='white',
                                 textvariable=self.picSuccess, width=5, font=("Courier", 6))
-        mode1_label.pack(side="bottom", fill="x", padx=2, pady=2)
+        mode1_label.pack(side="bottom", fill="x", padx=2, pady=10)
 
         mode_label = Tk.Label(modeConfig_panelU, text="Cam Mode: ", width=10)
-        mode_label.pack(side="left", fill="both", padx=2, pady=2)
+        mode_label.pack(side="left", fill="both", padx=2, pady=1)
 
         mode_var_label = Tk.Label(modeConfig_panelU, textvariable=self.captureModeVar, bg='#46637B',
                                   fg='white', width=10, font=("Courier", 8))
-        mode_var_label.pack(side="left", fill="both", padx=2, pady=2)
+        mode_var_label.pack(side="left", fill="both", padx=2, pady=1)
         
         conn_label = Tk.Label(modeConfig_panelU2, text="Connection: ", width=10)
         conn_label.pack(side="left", fill="both", padx=2, pady=2)
@@ -192,23 +197,23 @@ class DashboardUI:
         R1 = Tk.Radiobutton(modeConfig_panelL, text="UV", bg='#46637B', selectcolor='red',
                              value=int(1),variable=self.setLed,command=self.changeLED,
                              fg='white', font=("Courier", 8))
-        R1.pack(side="left", fill="both", padx=5, pady=10)
+        R1.pack(side="left", fill="both", padx=5, pady=2)
 
         R2 = Tk.Radiobutton(modeConfig_panelL, text="NIR", bg='#46637B', selectcolor='red',
                              value=int(2),variable=self.setLed,command=self.changeLED,
                              fg='white', font=("Courier", 8))
-        R2.pack(side="left", fill="both", padx=5, pady=10)
+        R2.pack(side="left", fill="both", padx=5, pady=2)
 
         R3 = Tk.Radiobutton(modeConfig_panelL, text="FS_White", bg='#46637B', selectcolor='red',
                              value=int(3),variable=self.setLed,command=self.changeLED,
                              fg='white', font=("Courier", 8))
-        R3.pack(side="left", fill="both", padx=5, pady=10)
+        R3.pack(side="left", fill="both", padx=5, pady=2)
 
         # ---------------- Sensor PANEL----------------------------------#
 
         # panel for the activated sensors
         sensor_panel = Tk.Frame(lower_panel, bg='#004000', width=100, height=100)
-        sensor_panel.pack(side="left", fill="both", padx=1, pady=2)
+        sensor_panel.pack(side="left", fill="both", padx=1, pady=0)
 
         act_sensor_label = Tk.Label(sensor_panel, text="Active Sensors", font=("Courier", 10))
         act_sensor_label.pack(side="top", fill="both", padx=5, pady=5)
@@ -261,10 +266,12 @@ class DashboardUI:
     def takePicture(self):
         ret = None
         mode = self.captureModeVar.get()
+        now = datetime.now()
+        filename = now.isoformat()
 
         if self.captureModeDict[SINGLE] == mode:
             print("taking single picture")
-            ret = self.cameraPictureControl.get_snapshot(self.hCamera, "snapshot")
+            ret = self.cameraPictureControl.get_snapshot(self.hCamera, filename)
         elif self.captureModeDict[BURST] == mode:
             print("taking burst picture")
 
@@ -279,22 +286,34 @@ class DashboardUI:
             total_interval = int(self.captureModeClass.intervalSB)
             steps = int(self.captureModeClass.stepSB)
             ret = self.cameraPictureControl.getIntervalSnapshot(self.hCamera, total_interval, steps)
-
+        
+        # save sensor data
+        self.saveSensorData(filename)
+        
         if ret == 0:
             self.picSuccess.set("Picture success!")
         else:
             self.picSuccess.set("Picture error")
+    
+    def startStream(self, numCameras=1):
+        for i in range(numCameras):
+            if i < (len(self.hCamera)):
+                PxLApi.setStreamState(self.hCamera[i], PxLApi.StreamState.STOP)
+                ret = PxLApi.setStreamState(self.hCamera[i], PxLApi.StreamState.START)
+                ret = PxLApi.setPreviewState(self.hCamera[i], PxLApi.PreviewState.START)
+                print(ret[0])
 
-    def initializeDashboard(self, captureModeClass, tivaConnection, sensorModeClass, cameraModeVar=None):
+
+    def initializeDashboard(self, captureModeClass, sensorModeClass, cameraModeVar=None,tivaConnection=None):
 
         stream_width = 640
         stream_height = 480
-
+        
         master_panel = Tk.Frame(self.root, bg='#46637B')
         master_panel.pack(anchor="w", expand=True, side="bottom", fill="x")
 
         # Create class for controling camera features like focus, sharpness, etc.
-    #    self.cameraControl = CameraControl()
+        self.cameraControl = CameraControl()
 
         self.captureModeClass = captureModeClass
 
@@ -304,10 +323,26 @@ class DashboardUI:
         self.tivaConnection = tivaConnection
         
         # Set up the camera
-    #    self.hCamera = self.cameraControl.setUpCamera()
-
-     #   if self.hCamera is None:
-      #      return
+        #self.hCamera = self.cameraControl.setUpCamera()
+        
+        self.hCamera = self.cameraControl.setUpCamera(2)
+        
+        secondRoot = Tk.Tk()
+       # secondRoot.geometry("%dx%d+%d+%d" % (50, 50,200,400))
+        btn = Tk.Button(secondRoot, text="end Stream",
+                        command=lambda: self.cameraControl.cleanUpCameras(self.hCamera))
+        btn.pack(side="left", fill="none", padx=10, pady=2)
+        
+        btn2 = Tk.Button(secondRoot, text="autofocus",
+                        command=lambda: self.cameraControl.setFocus(self.hCamera))
+        btn2.pack(side="left", fill="none", padx=10, pady=2)
+        
+        print("Camera array: ")
+        print(self.hCamera)
+        
+        
+        if len(self.hCamera) == 0:
+            return
 
         # If a StringVar was not provided by the capture mode class, create one
         if cameraModeVar == None:
@@ -321,16 +356,21 @@ class DashboardUI:
         self.stopEvent = threading.Event()
         self.thread = threading.Thread(name='sensor_loop thread',target=self.updateSensorLabels)
         self.thread.start()
-
-        # Just use all of the camers's current settings.
-        # Start the stream
-     #   ret = PxLApi.setStreamState(self.hCamera, PxLApi.StreamState.START)
-
-    #    if PxLApi.apiSuccess(ret[0]):
-    #        # Start the preview / message pump, as well as the Tknter window resize handler
-     #       self.topHwnd = int(self.root.frame(), 0)
-
-     #       self.cameraControl.start_preview(stream_width, stream_height, self.hCamera, self.topHwnd)
+              
+        self.topHwnd = int(self.root.frame(), 0)
+        
+        for i in range(len(self.hCamera)):
+            # start the steam
+            ret = PxLApi.setStreamState(self.hCamera[i], PxLApi.StreamState.START)
+        
+            if PxLApi.apiSuccess(ret[0]):
+               if(self.hCamera[i] == 1):
+                   offset = 1
+               else:
+                   offset = 400
+               title = "Camera_" + str(self.hCamera[i])
+               # Start the preview / message pump, as well as the Tknter window resize handler
+               self.cameraControl.control_preview_thread(self.hCamera[i], self.topHwnd, title, offset)
 
         return master_panel, self.hCamera
 
@@ -356,14 +396,11 @@ class DashboardUI:
             phReply = 0
             presReply = 0
             
-            
             if self.tivaConnection == 0:
                 self.connState.set("No Conn")
             else:
                 self.connState.set("Conn TIVA")
                 
-        
-#           
                 if activeSensorList['TEMP'] == 1:
                     tempReply = self.sendCommandAndSet('TEMP')
                     time.sleep(5)
@@ -384,12 +421,24 @@ class DashboardUI:
                 else:
                     self.PH.set('no active')
                    
-            
             self.Temp.set(tempReply)
             splitReply = [x.strip() for x in presReply.split(',')]
             self.Pressure.set(splitReply[0])
+           # self.Pressure.set(presReply)
             self.PH.set(phReply)
             time.sleep(5)
+    
+    def saveSensorData(self, filename):
+        if not os.path.exists("Media/Sensors"):
+            os.makedirs("Media/Sensors")
+
+        filepass = "Media/Sensors/" + filename + ".txt"
+        with open(filepass,'w') as f:
+            f.write('PH:'+str(self.PH.get())+'\n')
+            f.write('Temp:'+str(self.Temp.get())+'\n')
+            f.write('Pressure:'+str(self.Pressure.get())+'\n')
+           # f.write('DO:'+self.PH_sensor.get()+'\n')
+        f.close()
         
     def changeLED(self):
         if(self.setLed.get() == self.activeLED):
@@ -420,7 +469,7 @@ def main():
     #      Create our top level window, with a menu bar
     topWindow = Tk.Tk()
     topWindow.title("PixelinkPreview")
-    topWindow.geometry("%dx%d+0+0" % (820, 655))
+    topWindow.geometry("%dx%d+0+0" % (800, 480))
 
     menubar = Tk.Menu(topWindow)
     filemenu = Tk.Menu(menubar, tearoff=0)
@@ -428,7 +477,7 @@ def main():
     menubar.add_cascade(label="File", menu=filemenu)
     topWindow.config(menu=menubar)
 
-    ui = DashboardUI()
+    ui = DashboardUI(topWindow)
 
     master_panel, hCamera = ui.initializeDashboard(topWindow)
 

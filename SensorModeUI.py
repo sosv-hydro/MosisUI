@@ -1,4 +1,6 @@
 import tkinter as tki
+from datetime import datetime
+import os
 
 class SensorModeUI:
     def __init__(self):
@@ -28,21 +30,21 @@ class SensorModeUI:
         
     def initializeSensorMode(self):  
         root = tki.Toplevel()
-        root.geometry("%dx%d+%d+%d" % (600, 600, 0, 0))
+        root.geometry("%dx%d+%d+%d" % (600, 500, 150, 0))
         root.overrideredirect(True)
 
-        self.master_panel = tki.Frame(root, bg='#46637B',height=600, width=600)
+        self.master_panel = tki.Frame(root, bg='#46637B',height=400, width=600)
         self.master_panel.pack(fill="both")
         
-        ocusis_label = tki.Label(self.master_panel, text= "MOSIS", bg='#46637B', fg='white', font=("Courier", 24))
-        ocusis_label.pack(fill="both", padx=20, pady=20)
+#         ocusis_label = tki.Label(self.master_panel, text= "MOSIS", bg='#46637B', fg='white', font=("Courier", 24))
+#         ocusis_label.pack(fill="both", padx=20, pady=20)
         
         #----------------- Firstmost panel -------------------------------
         panel1 = tki.Frame(self.master_panel, bg='#46637B')
         panel1.pack(fill="both", padx=10, pady=10)
         
         capMode_label = tki.Label(panel1, text= "Sensor Mode ", bg='#46637B', fg='black', font=("Courier", 24))
-        capMode_label.pack(side="left",fill="both", padx=20, pady=20)
+        capMode_label.pack(side="left",fill="both", padx=20, pady=5)
         
         back_button = tki.Button(panel1, text= "Back",
                                  command=lambda : self.closeWindow(root))
@@ -131,7 +133,7 @@ class SensorModeUI:
     
     def closeWindow(self, root):
         root.destroy()
-    
+        
     def getTimeIntervalValues(self):
         return self.sensorModeRBVar.get()
     
@@ -156,15 +158,5 @@ class SensorModeUI:
     def getActiveSensors(self):
         sensorList = {"PH":self.PH_sensor.get(), "TEMP":self.Temp_sensor.get(),
                       "PRES":self.Press_sensor.get(), "LUMIN":self.Lumin_sensor.get()}
-#         if self.test == False:
-#             self.PH_sensor.set(1) 
-#             self.Press_sensor.set(1)
-#             self.Lumin_sensor.set(1)
-#             self.Temp_sensor.set(1)
-#         else:
-#             self.PH_sensor.set(0) 
-#             self.Press_sensor.set(0)
-#             self.Lumin_sensor.set(0)
-#             self.Temp_sensor.set(0)
-#         self.test = not self.test
+
         return sensorList

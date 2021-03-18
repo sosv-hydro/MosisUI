@@ -25,21 +25,21 @@ class CaptureModeUI:
         
     def initializeCaptureMode(self):
         root = tki.Toplevel()
-        root.geometry("%dx%d+%d+%d" % (600, 600, 0, 0))
+        root.geometry("%dx%d+%d+%d" % (600, 550, 150, 0))
         root.overrideredirect(True)
 
-        self.master_panel = tki.Frame(root, bg='#46637B',height=600, width=600)
+        self.master_panel = tki.Frame(root, bg='#46637B',height=400, width=600)
         self.master_panel.pack(fill="both")
         
-        ocusis_label = tki.Label(self.master_panel, text= "MOSIS", bg='#46637B', fg='white', font=("Courier", 24))
-        ocusis_label.pack(fill="both", padx=20, pady=20)
+#         ocusis_label = tki.Label(self.master_panel, text= "MOSIS", bg='#46637B', fg='white', font=("Courier", 24))
+#         ocusis_label.pack(fill="both", padx=20, pady=5)
         
         #----------------- Firstmost panel -------------------------------
         panel1 = tki.Frame(self.master_panel, bg='#46637B')
         panel1.pack(fill="both", padx=10, pady=5)
         
         capMode_label = tki.Label(panel1, text= "Capture Mode ", bg='#46637B', fg='black', font=("Courier", 24))
-        capMode_label.pack(side="left",fill="both", padx=20, pady=20)
+        capMode_label.pack(side="left",fill="both", padx=20, pady=5)
         
         back_button = tki.Button(panel1, text= "Back",
                                  command=lambda : self.closeWindow(root))

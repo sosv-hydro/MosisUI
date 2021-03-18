@@ -23,9 +23,11 @@ class CameraPictureControl():
         """
         assert 0 != hCamera
         assert fileName
+        
+        counter = 0
 
         # Determine the size of buffer we'll need to hold an image from the camera
-        rawImageSize = self.determine_raw_image_size(hCamera)
+        rawImageSize = self.determine_raw_image_size(hCamera[0])
         if 0 == rawImageSize:
             return FAILURE
 
@@ -33,35 +35,38 @@ class CameraPictureControl():
         rawImage = create_string_buffer(rawImageSize)
 
         if 0 != len(rawImage):
-            # Capture a raw image. The raw image buffer will contain image data on success.
-            ret = self.get_raw_image(hCamera, rawImage)
-            if PxLApi.apiSuccess(ret[0]):
-                frameDescriptor = ret[1]
+            
+            for i in range(len(hCamera)):
+                # Capture a raw image. The raw image buffer will contain image data on success.
+                ret = self.get_raw_image(hCamera[i], rawImage)
+                if PxLApi.apiSuccess(ret[0]):
+                    frameDescriptor = ret[1]
 
-                print("took picture")
+                    print("took picture")
 
-                assert 0 != len(rawImage)
-                assert frameDescriptor
-                #
-                # Do any image processing here
-                #
+                    assert 0 != len(rawImage)
+                    assert frameDescriptor
+                    #
+                    # Do any image processing here
+                    #
 
-                print("format picture")
+                    print("format picture")
 
-                # Encode the raw image into something displayable
-                ret = PxLApi.formatImage(rawImage, frameDescriptor, self.imageFormat)
-                print("formatted picture")
+                    # Encode the raw image into something displayable
+                    ret = PxLApi.formatImage(rawImage, frameDescriptor, self.imageFormat)
+                    print("formatted picture")
 
-                if SUCCESS == ret[0]:
-                    formatedImage = ret[1]
-                    # Save formated image into a file
+                    if SUCCESS == ret[0]:
+                        formatedImage = ret[1]
+                        # Save formated image into a file
 
-                    print("saving picture")
+                        print("saving picture")
+                        fileName = fileName + "_" + str(i)
 
-                    if self.save_image_to_file(fileName, formatedImage) == SUCCESS:
-                        return SUCCESS
+                        if self.save_image_to_file(fileName, formatedImage) == SUCCESS:
+                            return SUCCESS
 
-        return FAILURE
+            return FAILURE
 
     def getBurstSnapshot(self, burstNumber, hCamera, burstInterval=0):
         counter = 0
@@ -192,8 +197,11 @@ class CameraPictureControl():
         # Create a folder to save snapshots if it does not exist
         if not os.path.exists("Media"):
             os.makedirs("Media")
+        
+        if not os.path.exists("Media/Images"):
+            os.makedirs("Media/Images")
 
-        filepass = "Media/" + fileName + ".jpg"
+        filepass = "Media/Images/" + fileName + ".jpg"
         # Open a file for binary write
         file = open(filepass, "wb")
         if None == file:
