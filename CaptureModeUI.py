@@ -23,16 +23,15 @@ class CaptureModeUI:
         self.modeRBVar.set(1)
         self.changeCaptureModeText()
         
-    def initializeCaptureMode(self):
-        root = tki.Toplevel()
-        root.geometry("%dx%d+%d+%d" % (600, 550, 150, 0))
-        root.overrideredirect(True)
-
-        self.master_panel = tki.Frame(root, bg='#46637B',height=400, width=600)
-        self.master_panel.pack(fill="both")
+        self.root = None
         
-#         ocusis_label = tki.Label(self.master_panel, text= "MOSIS", bg='#46637B', fg='white', font=("Courier", 24))
-#         ocusis_label.pack(fill="both", padx=20, pady=5)
+    def initialize(self):
+        self.root = tki.Toplevel()
+        self.root.geometry("%dx%d+%d+%d" % (600, 550, 150, 0))
+       # root.overrideredirect(True)
+
+        self.master_panel = tki.Frame(self.root, bg='#46637B',height=400, width=600)
+        self.master_panel.pack(fill="both")
         
         #----------------- Firstmost panel -------------------------------
         panel1 = tki.Frame(self.master_panel, bg='#46637B')
@@ -42,7 +41,7 @@ class CaptureModeUI:
         capMode_label.pack(side="left",fill="both", padx=20, pady=5)
         
         back_button = tki.Button(panel1, text= "Back",
-                                 command=lambda : self.closeWindow(root))
+                                 command=lambda : self.closeWindow())
         back_button.pack(side = "right", fill="both", padx=5, pady=5)
         
         fill_label = tki.Label(self.master_panel, text= "", height=1, bg="grey")
@@ -142,13 +141,16 @@ class CaptureModeUI:
         timeLapseRB.deselect()
         burstModeRB.deselect()
         singleModeRB.select()
+        
+        back_button.focus()
+        back_button.configure(state='active', highlightcolor='blue')
 
-    def closeWindow(self, root):
+    def closeWindow(self):
         self.burstSB = self.burstSB.get()
         self.intervalSB = self.intervalSB.get()
         self.stepSB = self.stepSB.get()
         print("values for burst="+str(self.burstSB)+", interval="+str(self.intervalSB) + ", step="+str(self.stepSB))
-        root.destroy()
+        self.root.destroy()
 
 
     def changeCaptureModeText(self):

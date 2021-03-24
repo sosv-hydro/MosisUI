@@ -108,22 +108,22 @@ class DashboardUI:
         print("configuring lower dashboard")
 
         lower_panel = Tk.Frame(master_panel, bg='#46637B')
-        lower_panel.pack(side="bottom", padx=1, pady=1)
+        lower_panel.pack(side="bottom", padx=0, pady=1)
 
         # panel for the scales
         scale_panel = Tk.Frame(lower_panel, bg='#004000')
-        scale_panel.pack(side="left", fill="both", padx=2, pady=1)
+        scale_panel.pack(side="left", fill="both", padx=0, pady=1)
 
         params_label = Tk.Label(scale_panel, text="Camera Frame params: ")
         params_label.pack(side="top", fill="x", padx=5, pady=1)
 
         # panel for the scales
         sub_scale_panelL = Tk.Frame(scale_panel, bg='#004000')
-        sub_scale_panelL.pack(side="left", fill="both", padx=5, pady=1)
+        sub_scale_panelL.pack(side="left", fill="both", padx=1, pady=0)
 
         # panel for the scales
         sub_scale_panelR = Tk.Frame(scale_panel, bg='#004000')
-        sub_scale_panelR.pack(side="left", fill="both", padx=5, pady=1)
+        sub_scale_panelR.pack(side="left", fill="both", padx=1, pady=0)
 
         focusScale = Tk.Scale(sub_scale_panelL, from_=2, to=46000, resolution=5, orient=Tk.HORIZONTAL, width=5,
                               troughcolor="#004000", bg='#84A1B9', label="Focus", variable=self.focusSNum,
@@ -149,19 +149,19 @@ class DashboardUI:
 
         # panel for led / mode info
         modeConfig_panel = Tk.Frame(lower_panel, bg='#004000', width=50, height=50)
-        modeConfig_panel.pack(side="left", fill="both", padx=2, pady=2)
+        modeConfig_panel.pack(side="left", fill="both", padx=2, pady=0)
 
         modeConfig_panelU = Tk.Frame(modeConfig_panel, bg='#004000', width=25, height=50)
-        modeConfig_panelU.pack(side="top", fill="x", padx=5, pady=2)
+        modeConfig_panelU.pack(side="top", fill="x", padx=5, pady=0)
         
         modeConfig_panelU2 = Tk.Frame(modeConfig_panel, bg='#004000', width=25, height=50)
-        modeConfig_panelU2.pack(side="top", fill="x", padx=5, pady=2)
+        modeConfig_panelU2.pack(side="top", fill="x", padx=5, pady=0)
 
         modeConfig_panelL = Tk.Frame(modeConfig_panel, bg='#004000', width=25, height=50)
-        modeConfig_panelL.pack(side="top", fill="x", padx=5, pady=5)
+        modeConfig_panelL.pack(side="top", fill="x", padx=5, pady=0)
 
         modeConfig_panelSnap = Tk.Frame(modeConfig_panel, bg='#004000', width=25, height=50)
-        modeConfig_panelSnap.pack(side="top", fill="x", padx=5, pady=5)
+        modeConfig_panelSnap.pack(side="top", fill="x", padx=5, pady=0)
 
         btnAutoF = Tk.Button(modeConfig_panelSnap, text="Auto Focus",
                              command=lambda: self.cameraControl.setFocus(self.hCamera))
@@ -225,32 +225,32 @@ class DashboardUI:
         sensor_panelR.pack(side="left", fill="both", padx=2, pady=2)
 
         PH_label = Tk.Label(sensor_panelU, text="PH", bg='#84A1B9')
-        PH_label.pack(side="top", fill="both", padx=5, pady=5)
+        PH_label.pack(side="top", fill="both", padx=5, pady=2)
 
         PH_labelvar = Tk.Label(sensor_panelU,textvariable=self.PH, text="", bg='white',
                                width=10, font=("Courier", 9))
-        PH_labelvar.pack(side="top", fill="both", padx=5, pady=5)
+        PH_labelvar.pack(side="top", fill="both", padx=5, pady=2)
 
         Pressure_label = Tk.Label(sensor_panelU, text='  Pressure  ', bg='#84A1B9')
-        Pressure_label.pack(side="top", fill="both", padx=5, pady=5)
+        Pressure_label.pack(side="top", fill="both", padx=5, pady=2)
 
         Pressure_labelvar = Tk.Label(sensor_panelU, textvariable=self.Pressure, text="",
                                      bg='white', width = 13, font=("Courier", 9))
-        Pressure_labelvar.pack(side="top", fill="both", padx=5, pady=5)
+        Pressure_labelvar.pack(side="top", fill="both", padx=5, pady=2)
 
         Temp_label = Tk.Label(sensor_panelR, text="  Temp  ", bg='#84A1B9')
-        Temp_label.pack(side="top", fill="both", padx=5, pady=5)
+        Temp_label.pack(side="top", fill="both", padx=5, pady=2)
 
         Temp_labelvar = Tk.Label(sensor_panelR, textvariable=self.Temp, text="", bg='white',
                                  width=10, font=("Courier", 9))
-        Temp_labelvar.pack(side="top", fill="both", padx=5, pady=5)
+        Temp_labelvar.pack(side="top", fill="both", padx=5, pady=2)
 
         Lumin_label = Tk.Label(sensor_panelR, text="  Lumin  ", bg='#84A1B9')
-        Lumin_label.pack(side="top", fill="both", padx=5, pady=5)
+        Lumin_label.pack(side="top", fill="both", padx=5, pady=2)
 
         Lumin_labelvar = Tk.Label(sensor_panelR, textvariable=self.Lumin, text="", bg='white',
                                   width=10, font=("Courier", 9))
-        Lumin_labelvar.pack(side="top", fill="both", padx=5, pady=5)
+        Lumin_labelvar.pack(side="top", fill="both", padx=5, pady=2)
         
         
         self.Temp.set('reading...')
@@ -310,7 +310,7 @@ class DashboardUI:
         stream_height = 480
         
         master_panel = Tk.Frame(self.root, bg='#46637B')
-        master_panel.pack(anchor="w", expand=True, side="bottom", fill="x")
+        master_panel.pack(expand=True, side="top", fill="x")
 
         # Create class for controling camera features like focus, sharpness, etc.
         self.cameraControl = CameraControl()
@@ -327,15 +327,15 @@ class DashboardUI:
         
         self.hCamera = self.cameraControl.setUpCamera(2)
         
-        secondRoot = Tk.Tk()
-       # secondRoot.geometry("%dx%d+%d+%d" % (50, 50,200,400))
-        btn = Tk.Button(secondRoot, text="end Stream",
-                        command=lambda: self.cameraControl.cleanUpCameras(self.hCamera))
-        btn.pack(side="left", fill="none", padx=10, pady=2)
-        
-        btn2 = Tk.Button(secondRoot, text="autofocus",
-                        command=lambda: self.cameraControl.setFocus(self.hCamera))
-        btn2.pack(side="left", fill="none", padx=10, pady=2)
+#         secondRoot = Tk.Tk()
+#        # secondRoot.geometry("%dx%d+%d+%d" % (50, 50,200,400))
+#         btn = Tk.Button(secondRoot, text="end Stream",
+#                         command=lambda: self.cameraControl.cleanUpCameras(self.hCamera))
+#         btn.pack(side="left", fill="none", padx=10, pady=2)
+#         
+#         btn2 = Tk.Button(secondRoot, text="autofocus",
+#                         command=lambda: self.cameraControl.setFocus(self.hCamera))
+#         btn2.pack(side="left", fill="none", padx=10, pady=2)
         
         print("Camera array: ")
         print(self.hCamera)

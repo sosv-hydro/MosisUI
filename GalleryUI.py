@@ -9,8 +9,7 @@ class GalleryUI:
     def __init__(self):
         
         self.image = None
-         # initialize the root window and image panel
-        #self.root = root
+        
         self.camRBVar = tki.IntVar()
         self.count = 0
         self.panel2b2 = None
@@ -18,12 +17,14 @@ class GalleryUI:
         self.master_panel = None
         self.listOfFile = list()
         
-    def initializeGallery(self):
-        root = tki.Toplevel()
-        root.geometry("%dx%d+%d+%d" % (800, 480, 0, 0))
-        root.overrideredirect(True)
+        self.root = None
+        
+    def initialize(self):
+        self.root = tki.Toplevel()
+        self.root.geometry("%dx%d+%d+%d" % (800, 480, 0, 0))
+        #self.root.overrideredirect(True)
 
-        self.master_panel = tki.Frame(root, bg='#46637B',height=400, width=600)
+        self.master_panel = tki.Frame(self.root, bg='#46637B',height=400, width=600)
         self.master_panel.pack(fill="both")
         
 #         ocusis_label = tki.Label(self.master_panel, text= "OCUSIS", bg='#46637B', fg='white', font=("Courier", 24))
@@ -37,7 +38,7 @@ class GalleryUI:
         capMode_label.pack(side="left",fill="both", padx=20, pady=20)
         
         back_button = tki.Button(panel1, text= "Back",
-                                 command=lambda : self.closeWindow(root))
+                                 command=lambda : self.closeWindow())
         back_button.pack(side = "right", fill="both", padx=5, pady=5)
         
         fill_label = tki.Label(self.master_panel, text= "", height=1, bg="grey")
@@ -115,8 +116,8 @@ class GalleryUI:
             
             self.count += 1
     
-    def closeWindow(self, root):
-        root.destroy()
+    def closeWindow(self):
+        self.root.destroy()
             
     def saveTo(self):
         filename = askdirectory()

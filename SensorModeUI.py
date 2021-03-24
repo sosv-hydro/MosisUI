@@ -28,12 +28,14 @@ class SensorModeUI:
         self.Lumin_sensor.set(1)
         self.Temp_sensor.set(1)
         
-    def initializeSensorMode(self):  
-        root = tki.Toplevel()
-        root.geometry("%dx%d+%d+%d" % (600, 500, 150, 0))
-        root.overrideredirect(True)
+        self.root = None
+        
+    def initialize(self):  
+        self.root = tki.Toplevel()
+        self.root.geometry("%dx%d+%d+%d" % (600, 500, 150, 0))
+      #  self.root.overrideredirect(True)
 
-        self.master_panel = tki.Frame(root, bg='#46637B',height=400, width=600)
+        self.master_panel = tki.Frame(self.root, bg='#46637B',height=400, width=600)
         self.master_panel.pack(fill="both")
         
 #         ocusis_label = tki.Label(self.master_panel, text= "MOSIS", bg='#46637B', fg='white', font=("Courier", 24))
@@ -47,7 +49,7 @@ class SensorModeUI:
         capMode_label.pack(side="left",fill="both", padx=20, pady=5)
         
         back_button = tki.Button(panel1, text= "Back",
-                                 command=lambda : self.closeWindow(root))
+                                 command=lambda : self.closeWindow())
         back_button.pack(side = "right", fill="both", padx=5, pady=5)
         
         fill_label = tki.Label(self.master_panel, text= "", height=1, bg="grey")
@@ -131,8 +133,8 @@ class SensorModeUI:
         
         return self.master_panel
     
-    def closeWindow(self, root):
-        root.destroy()
+    def closeWindow(self):
+        self.root.destroy()
         
     def getTimeIntervalValues(self):
         return self.sensorModeRBVar.get()
