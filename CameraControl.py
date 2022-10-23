@@ -1,9 +1,9 @@
 """
-previewWithTk.py
+CameraControl.py
 Simple sample application demostrating the use of the API Preview function,
 embedded within a Tknter window
 """
-from pixelinkWrapper import *
+#from pixelinkWrapper import *
 from ctypes import *
 #import ctypes.wintypes
 import threading

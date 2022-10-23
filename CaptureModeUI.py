@@ -1,3 +1,19 @@
+"""
+Description: The Capture Mode UI contains options to set the camera mode. Options include image
+stacking, time lapse, burst mode and single mode.
+
+image stacking: grabs a certain number of images for set increasing focus intervals. This will
+                a stack of sorts. When put together, these images can produce a 3d effect.
+
+time lapse: grabs images on certain intervals for a determined amount of time
+
+burst mode: grabs a certain number of images on one burst
+
+single mode: just grabs one image
+
+by: Sofia Saavedra
+"""
+
 import tkinter as tki
 
 SINGLE = 1
@@ -7,32 +23,54 @@ IMAGESTACK = 4
 
 class CaptureModeUI:
     def __init__(self):
+        """Constructor for this class
+        """
 
+        # variable that holds the currently selected option for the camera mode radio button
         self.modeRBVar = tki.IntVar()
+        # Camera radio button
         self.camRBVar = tki.IntVar()
 
+        # label that establishes the current capture mode
         self.captureModeText = tki.StringVar()
+        # dictionary containing the radio button index and its assigned string name
         self.captureModeDict = {1: "Single", 2: "Burst", 3: "Interval", 4: "ImageStack"}
 
+        # variable for the image stacking step size spinbox
         self.stepSB = None
+
+        # variable for the interval spinbox, for time lapse
         self.intervalSB = None
+
+        # holds the burst mode spin box
         self.burstSB = None
         
+        # reference to the master panel
         self.master_panel = None
 
+        # set initial mode to the one outlined with index 1
         self.modeRBVar.set(1)
+
+        # change capture mode text according to that belonging to index 1
         self.changeCaptureModeText()
         
+        # reference for the tkinter top level window
         self.root = None
         
     def initialize(self):
+        """Initializes the Capture Mode panel/window and all its needed components/widgets
+        """
+
+        # set the top level window and its geometry
         self.root = tki.Toplevel()
         self.root.geometry("%dx%d+%d+%d" % (600, 550, 150, 0))
        # root.overrideredirect(True)
 
+        # set master panel
         self.master_panel = tki.Frame(self.root, bg='#46637B',height=400, width=600)
         self.master_panel.pack(fill="both")
         
+        # These will just set some UI attributes
         #----------------- Firstmost panel -------------------------------
         panel1 = tki.Frame(self.master_panel, bg='#46637B')
         panel1.pack(fill="both", padx=10, pady=5)
@@ -142,10 +180,13 @@ class CaptureModeUI:
         burstModeRB.deselect()
         singleModeRB.select()
         
+        # set initial focus to the back button
         back_button.focus()
         back_button.configure(state='active', highlightcolor='blue')
 
     def closeWindow(self):
+        """Function to close the window for Capture mode, but first, save the current values for the different modes.
+        """
         self.burstSB = self.burstSB.get()
         self.intervalSB = self.intervalSB.get()
         self.stepSB = self.stepSB.get()
@@ -154,18 +195,28 @@ class CaptureModeUI:
 
 
     def changeCaptureModeText(self):
+        """Changes text displayed for the current Capture mode. It sets the text according to the current option chosen.
+        """
         self.captureModeText.set(self.captureModeDict[self.modeRBVar.get()])
 
-       
     def getCaptureModeValues(self):
+        """Gets the current capture mode value
+        """
         return self.modeRBVar.get()
     
     def getBurstModeValues(self):
+        """Gets the current value for burst mode. (How many images to take in the burst)
+        """
         return self.burstSB.get()
     
     def getStepsValues(self):
+        """Gets the current value for image stacking. (what are the focus steps to take)
+        """
         return self.stepSB.get()
     
     def getIntervalValues(self):
+        """Gets the current value for Interval mode. (what is the interval in which we will take
+        the images.)
+        """
         return self.intervalSB.get()
 

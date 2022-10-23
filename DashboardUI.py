@@ -1,23 +1,22 @@
 """
-previewWithTk.py
-Simple sample application demostrating the use of the API Preview function,
-embedded within a Tknter window
+DashboardUI.py
+
 """
-from pixelinkWrapper import *
+#from pixelinkWrapper import *
 from ctypes import *
 #import ctypes.wintypes
 import tkinter as Tk
 import time
 import threading
 import logging
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 from datetime import datetime
 import os
 #import win32api, win32con
 
 from CameraControl import CameraControl
 
-from CameraPictureControl import CameraPictureControl
+#from CameraPictureControl import CameraPictureControl
 
 SINGLE = 1
 BURST = 2
@@ -26,7 +25,10 @@ IMAGESTACK = 4
 
 class DashboardUI:
 
-    def __init__(self, root):
+    def __init__(self, root, online:bool):
+        """
+        Constructor for this class. 
+        """
         logging.basicConfig(level=logging.DEBUG,
                     format='[%(levelname)s] (%(threadName)-10s) %(message)s',
                     )
@@ -44,7 +46,7 @@ class DashboardUI:
         #self.hCamera = None
         self.hCamera = []
         self.cameraControl = None
-        self.cameraPictureControl = CameraPictureControl()
+        #self.cameraPictureControl = CameraPictureControl()
 
         self.topHwnd = None
         
@@ -271,13 +273,13 @@ class DashboardUI:
 
         if self.captureModeDict[SINGLE] == mode:
             print("taking single picture")
-            ret = self.cameraPictureControl.get_snapshot(self.hCamera, filename)
+            #ret = self.cameraPictureControl.get_snapshot(self.hCamera, filename)
         elif self.captureModeDict[BURST] == mode:
             print("taking burst picture")
 
             self.picSuccess.set("Taking Burst pictures.....")
             burstNumber = int(self.captureModeClass.burstSB)
-            ret = self.cameraPictureControl.getBurstSnapshot(burstNumber, self.hCamera)
+            #ret = self.cameraPictureControl.getBurstSnapshot(burstNumber, self.hCamera)
         elif self.captureModeDict[INTERVAL] == mode:
             print("taking interval picture")
 
@@ -285,7 +287,7 @@ class DashboardUI:
             time.sleep(2)
             total_interval = int(self.captureModeClass.intervalSB)
             steps = int(self.captureModeClass.stepSB)
-            ret = self.cameraPictureControl.getIntervalSnapshot(self.hCamera, total_interval, steps)
+            #ret = self.cameraPictureControl.getIntervalSnapshot(self.hCamera, total_interval, steps)
         
         # save sensor data
         self.saveSensorData(filename)

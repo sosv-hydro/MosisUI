@@ -1,3 +1,9 @@
+"""
+Description: The Gallery mode UI shows a preview of the obtained images. Or the pointed directory where
+these images reside
+
+by: Sofia Saavedra
+"""
 import tkinter as tki
 from tkinter.filedialog import asksaveasfile, askdirectory
 import os
@@ -13,6 +19,8 @@ class GalleryUI:
         self.camRBVar = tki.IntVar()
         self.count = 0
         self.panel2b2 = None
+
+        # we will look in this directory in order to preview the images
         self.dirName = 'Media/Images'
         self.master_panel = None
         self.listOfFile = list()
@@ -26,9 +34,6 @@ class GalleryUI:
 
         self.master_panel = tki.Frame(self.root, bg='#46637B',height=400, width=600)
         self.master_panel.pack(fill="both")
-        
-#         ocusis_label = tki.Label(self.master_panel, text= "OCUSIS", bg='#46637B', fg='white', font=("Courier", 24))
-#         ocusis_label.pack(fill="both", padx=20, pady=5)
         
         #----------------- Firstmost panel -------------------------------
         panel1 = tki.Frame(self.master_panel, bg='#46637B')
@@ -83,8 +88,9 @@ class GalleryUI:
         return self.master_panel
         
     def getListOfFiles(self):
-        # create a list of file and sub directories 
-        # names in the given directory 
+        """Gets a list of the file and sub directories names in the given directory 
+        """
+        
         self.listOfFile = os.listdir(self.dirName)
         self.allFiles = list()
         

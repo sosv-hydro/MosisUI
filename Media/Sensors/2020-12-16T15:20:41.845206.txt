@@ -1,3 +1,0 @@
-PH:1
-Temp:1
-Pressure:1

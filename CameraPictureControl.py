@@ -1,9 +1,9 @@
 """
-getSnapshot.py
-Sample code to capture an image from a Pixelink camera and save the encoded image to folder as a file.
+CameraPictureControl.py
+Code to capture an image from a Pixelink camera and save the encoded image to folder as a file.
 """
 
-from pixelinkWrapper import *
+#from pixelinkWrapper import *
 from ctypes import *
 import os
 from datetime import datetime
@@ -15,11 +15,18 @@ FAILURE = 1
 class CameraPictureControl():
 
     def __init__(self, picFormat=PxLApi.ImageFormat.JPEG ):
+        """Constructor
+        """
+        # set the image format
         self.imageFormat = picFormat
 
-    def get_snapshot(self, hCamera, fileName):
+    def get_snapshot(self, hCamera, fileName) -> bool:
         """
         Get a snapshot from the camera, and save to a file.
+
+        :param hCamera: reference to the camera we are using to take these images
+        :param fileName: filename onto which we will save the image
+        :return bool: true if the function was a success, false otherwise
         """
         assert 0 != hCamera
         assert fileName
@@ -34,6 +41,7 @@ class CameraPictureControl():
         # Create a buffer to hold the raw image
         rawImage = create_string_buffer(rawImageSize)
 
+        # if we actually have data in the buffer, continue
         if 0 != len(rawImage):
             
             for i in range(len(hCamera)):
@@ -68,7 +76,14 @@ class CameraPictureControl():
 
             return FAILURE
 
-    def getBurstSnapshot(self, burstNumber, hCamera, burstInterval=0):
+    def getBurstSnapshot(self, burstNumber:int, hCamera, burstInterval:int=0) -> bool: 
+        """Takes a number of pictures in succession, or as a burst. The amount of images
+        taken is directly related to the burstNumber stiputlated on the parameter provided.
+
+        :param burstNumber: number of images to take at once
+        :param hCamera: reference to the camera we are using to take these images
+        :return bool: true if the burst snapshot was a success, false otherwise
+        """
         counter = 0
 
         try:
@@ -81,24 +96,38 @@ class CameraPictureControl():
         except:
             return FAILURE
 
-    def getIntervalSnapshot(self, hCamera, total_interval_min, steps):
+    def getIntervalSnapshot(self, hCamera, total_interval_min, steps) -> bool:
+        """Function to take images on a stipulated interval. This interval is directed by the total_inteval_min 
+        and the steps parameter
+
+        :param total_interval_min: total time in which to take images
+        :param steps: steps on which to take each image. Or the sub interval of the total interval.
+        :param hCamera: reference to the camera we are using to take these images
+        :return bool: true if the interval snapshot was a success, false otherwise
+        """
         counter = 0
 
         interval_seconds = 60 * total_interval_min
+        
+        # get the time at this moment as the start time for the total interval and the steps
         start_time = time.time()
         start_step = time.time()
 
         print("start interval snapshot")
+        # the total amount of images to take will be a function of the total interval time and 
+        # the steps we want to take inside it.
         total_pictures = interval_seconds / steps
 
         print("start time: ", start_time)
 
         try:
+            # while the time transpired is less than that specified or the total pictures taken is less
+            # than that stipulated before. 
             while time.time() - start_time <= interval_seconds or counter < total_pictures:
-                # print("time difference: ", time.time() - start_time)
+               
+               # if the step time has been reached, take an image
                 if time.time() - start_step >= steps:
                     fileName = "interval" + str(counter) +"_"+ str(datetime.now().strftime("%Y_%m_%d %H_%M_%S"))
-
                     # Get a snapshot and save it to a folder as a file
                     retVal = self.get_snapshot(hCamera, fileName)
                     counter += 1
@@ -107,11 +136,13 @@ class CameraPictureControl():
         except:
             return FAILURE
 
-    def determine_raw_image_size(self, hCamera):
-        """
-        Query the camera for region of interest (ROI), decimation, and pixel format
+    def determine_raw_image_size(self, hCamera) -> float:
+        """Query the camera for region of interest (ROI), decimation, and pixel format
         Using this information, we can calculate the size of a raw image
         Returns 0 on failure
+
+        :param hCamera: reference to the camera we are using to take these images
+        :return float: size of the raw image
         """
         assert 0 != hCamera
 
@@ -184,11 +215,11 @@ class CameraPictureControl():
 
         return ret
 
-    def save_image_to_file(self, fileName, formatedImage):
+    def save_image_to_file(self, fileName, formatedImage) -> bool:
         """
         Save the encoded image buffer to a file
         This overwrites any existing file
-        Returns SUCCESS or FAILURE
+        :return bool: Returns SUCCESS or FAILURE
         """
 
         assert fileName
@@ -216,32 +247,32 @@ class CameraPictureControl():
         return FAILURE
 
 
-def main():
-    picControl = CameraPictureControl()
+# def main():
+#     picControl = CameraPictureControl()
 
-    filenameJpeg = "snapshot.jpg"
+#     filenameJpeg = "snapshot.jpg"
 
-    ret = PxLApi.initialize(0)
-    if not PxLApi.apiSuccess(ret[0]):
-        return 1
-    hCamera = ret[1]
+#     ret = PxLApi.initialize(0)
+#     if not PxLApi.apiSuccess(ret[0]):
+#         return 1
+#     hCamera = ret[1]
 
-    # Get a snapshot and save it to a folder as a file
-    retVal = picControl.get_snapshot(hCamera, filenameJpeg)
+#     # Get a snapshot and save it to a folder as a file
+#     retVal = picControl.get_snapshot(hCamera, filenameJpeg)
 
-    # Done capturing, so no longer need the camera streaming images.
-    # Note: If ret is used for this call, it will lose frame descriptor information.
-    PxLApi.setStreamState(hCamera, PxLApi.StreamState.STOP)
+#     # Done capturing, so no longer need the camera streaming images.
+#     # Note: If ret is used for this call, it will lose frame descriptor information.
+#     PxLApi.setStreamState(hCamera, PxLApi.StreamState.STOP)
 
-    # Tell the camera we're done with it.
-    PxLApi.uninitialize(hCamera)
+#     # Tell the camera we're done with it.
+#     PxLApi.uninitialize(hCamera)
 
-    if SUCCESS != retVal:
-        print("ERROR: Unable to capture an image")
-        return FAILURE
+#     if SUCCESS != retVal:
+#         print("ERROR: Unable to capture an image")
+#         return FAILURE
 
-    return SUCCESS
+#     return SUCCESS
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

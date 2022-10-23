@@ -1,3 +1,11 @@
+"""
+Description: The Sensor Mode UI allows to enable or disable sensors. Disabling, in this case, just means
+not displaying the sensor values to the dashboard. The possible sensors to enable/disable are as thus: Ph sensor, 
+pressure sensor, luminosity sensor and temperature sensor.
+
+by: Sofia Saavedra
+"""
+
 import tkinter as tki
 from datetime import datetime
 import os
@@ -5,9 +13,8 @@ import os
 class SensorModeUI:
     def __init__(self):
         
-         # initialize the root window and image
+        # initialize the root window and image
         self.sensorModeRBVar = tki.IntVar()
-        self.PH_RB = tki.IntVar()
         self.PH_RB = tki.IntVar()
         self.master_panel = None
         
@@ -16,6 +23,8 @@ class SensorModeUI:
         self.Lumin_sensor = tki.IntVar()
         self.Temp_sensor = tki.IntVar()
         
+        # The Radio buttons for each of the sensors. This indicates if the sensor is enabled
+        # or disabled
         self.RB_Press = None
         self.RB_Temp = None
         self.RB_PH = None
@@ -37,9 +46,6 @@ class SensorModeUI:
 
         self.master_panel = tki.Frame(self.root, bg='#46637B',height=400, width=600)
         self.master_panel.pack(fill="both")
-        
-#         ocusis_label = tki.Label(self.master_panel, text= "MOSIS", bg='#46637B', fg='white', font=("Courier", 24))
-#         ocusis_label.pack(fill="both", padx=20, pady=20)
         
         #----------------- Firstmost panel -------------------------------
         panel1 = tki.Frame(self.master_panel, bg='#46637B')
@@ -134,30 +140,44 @@ class SensorModeUI:
         return self.master_panel
     
     def closeWindow(self):
+        """Closes the current Sensor Mode Window
+        """
         self.root.destroy()
         
-    def getTimeIntervalValues(self):
+    def getSensorMode(self):
+        """Gets sensor mode index
+        """
         return self.sensorModeRBVar.get()
     
     def toggleLumin(self):
+        """Toggles luminosity sensor
+        """
         print("toggle lumin")
-       #self.RB_Lumin.toggle()
+        self.RB_Lumin.toggle()
         print(self.Lumin_sensor.get())
     
     def togglePH(self):
+        """Toggles PH sensor
+        """
         print("toggle PH")
-      #  self.RB_PH.toggle()
+        self.RB_PH.toggle()
         print(self.PH_sensor.get())
     
     def toggleTemp(self):
-       # self.RB_Temp.toggle()
+        """toggles temp sensor
+        """
+        self.RB_Temp.toggle()
         print(self.Temp_sensor.get())
     
     def togglePress(self):
-       # self.RB_Press.toggle()
+        """Toggles pressure sensor
+        """
+        self.RB_Press.toggle()
         print(self.Press_sensor.get()) 
     
     def getActiveSensors(self):
+        """Returns list of active sensors
+        """
         sensorList = {"PH":self.PH_sensor.get(), "TEMP":self.Temp_sensor.get(),
                       "PRES":self.Press_sensor.get(), "LUMIN":self.Lumin_sensor.get()}
 
